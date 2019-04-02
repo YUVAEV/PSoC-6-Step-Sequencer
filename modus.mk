@@ -59,7 +59,7 @@ CY_EXAMPLE_NAME = QSPIReadWrite
 #
 # Description of the example project to display
 #
-CY_EXAMPLE_DESCRIPTION = SMIF QSPI read-write application
+CY_EXAMPLE_DESCRIPTION = SequencerX
 
 #
 # New project dialog inclusion
@@ -79,15 +79,7 @@ CY_REQUIRED_SDK = Cypress SDK[1.1]
 #
 # Valid devices for this example. If empty, this example works for all devices
 #
-CY_VALID_DEVICES = $(CY_DEVICES_WITH_PACKAGE_124-BGA) \
-	$(CY_DEVICES_WITH_PACKAGE_116-BGA-BLE) \
-	$(CY_DEVICES_WITH_PACKAGE_104-M-CSP-BLE) \
-	$(CY_DEVICES_WITH_PACKAGE_80-WLCSP) \
-	$(CY_DEVICES_WITH_PACKAGE_116-BGA-USB) \
-	$(CY_DEVICES_WITH_PACKAGE_124-BGA-SIP) \
-	$(CY_DEVICES_WITH_PACKAGE_104-M-CSP-BLE-USB) \
-	${CY_DEVICES_WITH_PACKAGE_128-TQFP} \
-	$(CY_DEVICES_WITH_PACKAGE_100-WLCSP))
+CY_VALID_DEVICES = CY8C6347BZI-BLD53
 
 #
 # The source code for the CM0+ application
@@ -182,8 +174,6 @@ CYCONFIG_DESIGN_MODUS = design.modus
 # Additional (non-core) set of generated source files
 #
 CYCONFIG_GENERATED_SOURCES = \
-	GeneratedSource/cycfg_qspi_memslot.c\
-	GeneratedSource/cycfg_qspi_memslot.h
 
 #
 # Check that the CYSDK environment variable exists
