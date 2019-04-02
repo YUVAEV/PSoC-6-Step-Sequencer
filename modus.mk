@@ -1,6 +1,3 @@
-# This is a file used and owned by the ModusToolbox IDE. Users should not modify this file.
-CY_MIDDLEWARE_SELECTOR_TOUCHED=true
-DEVICE=CY8C6347BZI-BLD53
 ################################################################################
 # \file modus.mk
 # \version 1.0
@@ -54,12 +51,12 @@ PLATFORM=PSOC6_DUAL_CORE
 #
 # The default name of this example
 #
-CY_EXAMPLE_NAME = QSPIReadWrite
+CY_EXAMPLE_NAME = SequencerX
 
 #
 # Description of the example project to display
 #
-CY_EXAMPLE_DESCRIPTION = SequencerX
+CY_EXAMPLE_DESCRIPTION = 
 
 #
 # New project dialog inclusion
@@ -90,7 +87,23 @@ CY_APP_CM0P_SOURCE = \
 # The source code for the CM4 application
 #
 CY_APP_CM4_SOURCE = \
+	Source/cy_cy8ckit_028_epd/cy_cy8ckit_028_epd.c \
+	Source/cy_cy8ckit_028_epd/cy_cy8ckit_028_epd.h \
+	Source/cy_cy8ckit_028_epd/cy_eink_psoc_interface.c \
+	Source/cy_cy8ckit_028_epd/cy_eink_psoc_interface.h \
+	Source/cy_cy8ckit_028_epd/pervasive_eink_configuration.h \
+	Source/cy_cy8ckit_028_epd/pervasive_eink_hardware_driver.c \
+	Source/cy_cy8ckit_028_epd/pervasive_eink_hardware_driver.h \
+	Source/emWin_config/GUI_X.c \
+	Source/emWin_config/GUIConf.c \
+	Source/emWin_config/LCDConf.c \
+	Source/emWin_config/LCDConf.h \
 	Source/main.c\
+	Source/hw_functions.c\
+	Source/hw_functions.h\
+	Source/gui_functions.c\
+	Source/gui_functions.h\
+	Source/sound_samples.h\
 	Source/stdio_user.c\
 	Source/stdio_user.h
 
