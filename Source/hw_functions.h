@@ -1,10 +1,18 @@
+/******************************************************************************
+* File Name: hw_functions.h
+*
+* Version: 1.00
+*
+* Description: This file is the public interface of hw_functions.c
+*
+*******************************************************************************/
 #include "cycfg.h"
 #include "cy_pdl.h"
 #include <stdio.h>
 #include "stdio_user.h"
 #include "cy_dma.h"
 
-//#define DAC_CLOCK_FREQ (72000000UL)
+/* Datatype used for LED controll. */
 typedef enum {
 	/* use `&` to combine colors */
 	LED_NONE    =   0b00000000,
@@ -15,6 +23,7 @@ typedef enum {
 	LED_9       =   0b00010000
 } led_color;
 
+/* Data-type for touch data.*/
 typedef enum {
 	TOUCH_NONE,
 	TOUCH_BTN0,
@@ -29,8 +38,5 @@ void InitUART(void);
 void InitDAC(void);
 void InitDMA(void);
 void InitCapSense(void);
-
 void SetupDAC_DMA(uint8*PatternPtr);
-
-//void SetUpSounds(uint8*PatternPtr);
 capsense_touch CapSenseGetTouch(void);

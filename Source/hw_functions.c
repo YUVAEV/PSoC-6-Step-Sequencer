@@ -18,15 +18,17 @@
 #include "sound_samples.h"
 
 #define READ_BIT(byte, index) (((byte) >> (index)) & 1)
-#define CTDAC_NEXT_VALUE_PTR ((CTDAC_V1_Type *)0x41140104UL)
 
-#define LEFT_FLICK_MASK		(0x03004080u)/* Macros for gesture detection. */
-#define RIGHT_FLICK_MASK	(0x02004080u)
-
+/*******************************************************************************
+* Pointers to audio samples and their DMA Y loops of data transfer.
+*******************************************************************************/
 extern const int16 *SoundsPointers[16];
 extern uint32 Y_SoundLoops[16];
 extern uint32 Y_ZeroLoops[16];
 
+/*******************************************************************************
+* DMA descriptors and their configurations.
+*******************************************************************************/
 static cy_stc_dma_descriptor_t DAC_DMA_SoundDescriptors[16] = {0};
 static cy_stc_dma_descriptor_config_t DAC_DMA_SoundDescriptorsConfig[16] = {0};
 static cy_stc_dma_descriptor_t DAC_DMA_ZeroDescriptors[16] = {0};
@@ -41,6 +43,21 @@ void InitCapSense(void);
 capsense_touch CapSenseGetTouch(void);
 void SetupDAC_DMA(uint8*PatternPtr);
 
+/*******************************************************************************
+* void ErrorHandler(void)
+********************************************************************************
+*
+* Summary:
+*  This function is used to disable interrupts and to loop program in cycle which
+ do nothing.
+*  
+* Parameters:
+*  led_color Color - single byte which corresponds to the colour of LED.
+*
+* Return:
+*  None.
+*
+*******************************************************************************/
 void ErrorHandler(void){
 	__disable_irq();
 
@@ -52,7 +69,20 @@ void ErrorHandler(void){
 		/* Do nothing in infinite cycle. */
 	}
 }
-
+/*******************************************************************************
+* void LED_PrintByte(led_color Color)
+********************************************************************************
+*
+* Summary:
+*  This function is used controll all LED with one byte.
+*  
+* Parameters:
+*  led_color Color - single byte which corresponds to the colour of LED.
+*
+* Return:
+*  None.
+*
+*******************************************************************************/
 void LED_PrintByte(led_color Color){
 	(READ_BIT(Color, 0)) ? (Cy_GPIO_Clr(RED_LED_PORT, RED_LED_PIN))     : (Cy_GPIO_Set(RED_LED_PORT, RED_LED_PIN));
 	(READ_BIT(Color, 1)) ? (Cy_GPIO_Clr(GREEN_LED_PORT, GREEN_LED_PIN)) : (Cy_GPIO_Set(GREEN_LED_PORT, GREEN_LED_PIN));
@@ -61,6 +91,20 @@ void LED_PrintByte(led_color Color){
 	(READ_BIT(Color, 4)) ? (Cy_GPIO_Clr(LED9_PORT, LED9_PIN))           :  (Cy_GPIO_Set(LED9_PORT, LED9_PIN));
 }
 
+/*******************************************************************************
+* void InitUART(void)
+********************************************************************************
+*
+* Summary:
+*  This function is used to initialize UART.
+*  
+* Parameters:
+*  None.
+*
+* Return:
+*  None.
+*
+*******************************************************************************/
 void InitUART(void){
 	cy_stc_scb_uart_context_t UART_context;
 	cy_en_scb_uart_status_t InitState;
@@ -68,6 +112,20 @@ void InitUART(void){
 	(InitState == CY_SCB_UART_SUCCESS)?(Cy_SCB_UART_Enable(UART_HW)):(ErrorHandler());
 }
 
+/*******************************************************************************
+* void InitDAC(void)
+********************************************************************************
+*
+* Summary:
+*  This function is used to initialize DAC with OpAmp as buffer. Pin 
+*  
+* Parameters:
+*  None.
+*
+* Return:
+*  None.
+*
+*******************************************************************************/
 void InitDAC(void){
 	Cy_SysAnalog_Init(&AREF_config);
 	Cy_SysAnalog_Enable();
@@ -77,19 +135,48 @@ void InitDAC(void){
 	Cy_CTDAC_Enable(KIT_DAC_HW);
 }
 
+/*******************************************************************************
+* void InitDMA(void)
+********************************************************************************
+*
+* Summary:
+*  This function is used to initialize DMA descriptors and channel.
+*  
+* Parameters:
+*  None.
+*
+* Return:
+*  None.
+*
+*******************************************************************************/
 void InitDMA(void){
+	/* Initialize all descriptors. */
 	Cy_DMA_Descriptor_Init(&DAC_DMA_Descriptor_0, &DAC_DMA_Descriptor_0_config);
 	for(int x = 0; x<16; x++){
 			Cy_DMA_Descriptor_Init(&DAC_DMA_SoundDescriptors[x], &DAC_DMA_SoundDescriptorsConfig[x]);
 			Cy_DMA_Descriptor_Init(&DAC_DMA_ZeroDescriptors[x], &DAC_DMA_ZeroDescriptorsConfig[x]);
 	}
 	Cy_DMA_Channel_Init(DAC_DMA_HW, DAC_DMA_CHANNEL, &DAC_DMA_channelConfig);
-
+	/* Enable DMA. */
 	Cy_DMA_Channel_SetDescriptor(DAC_DMA_HW, DAC_DMA_CHANNEL, &DAC_DMA_SoundDescriptors[0]);
 	Cy_DMA_Channel_Enable(DAC_DMA_HW, DAC_DMA_CHANNEL);
 	Cy_DMA_Enable(DAC_DMA_HW);
 }
 
+/*******************************************************************************
+* void InitCapSense(void)
+********************************************************************************
+*
+* Summary:
+*  This function is used to initialize CapSense and its interrupt.
+*  
+* Parameters:
+*  None.
+*
+* Return:
+*  None.
+*
+*******************************************************************************/
 void InitCapSense(void){
 	const cy_stc_sysint_t CapSense_ISR_cfg ={ .intrSrc = csd_interrupt_IRQn, .intrPriority = 7u, };
 	Cy_CapSense_Init(&cy_capsense_context);
@@ -100,45 +187,90 @@ void InitCapSense(void){
 	Cy_CapSense_Enable(&cy_capsense_context);  /* Initialize the CapSense firmware modules. */
 }
 
+
+
+/*******************************************************************************
+* Function Name: capsense_touch CapSenseGetTouch(void)
+********************************************************************************
+*
+* Summary:
+*  This function is used to scan CapSense vidgets untill touch registered.
+*  
+* Parameters:
+*  None
+*
+* Return:
+*  capsense_touch - registered touch.
+*
+*******************************************************************************/
+/* Macros for gesture detection. */
+#define LEFT_FLICK_MASK		(0x03004080u)
+#define RIGHT_FLICK_MASK	(0x02004080u)
+
 capsense_touch CapSenseGetTouch(void){
 	uint32 Slider_Status;
-	capsense_touch CurrTouch = TOUCH_BTN1;
+	/* Function use curr and prev touch to avoid return of same touch
+	in the next function call. CurrTouch should be initialized with 
+	non zero value to return touch only when previous scan was TOUCH_NONE.*/
+	capsense_touch CurrTouch = TOUCH_BTN1; 
 	capsense_touch PrevTouch = TOUCH_NONE;
 	while(1u){
 		if(CY_CAPSENSE_NOT_BUSY == Cy_CapSense_IsBusy(&cy_capsense_context))
 		{
 			PrevTouch = CurrTouch;
-			/* Start the CapSense scan */
+			/* Start the CapSense scan, process all widgets and read touch information */
 			Cy_CapSense_ScanAllWidgets(&cy_capsense_context);
-			/* Process all widgets and read touch information */
 			Cy_CapSense_ProcessAllWidgets(&cy_capsense_context);
 			Slider_Status = Cy_CapSense_DecodeWidgetGestures(CY_CAPSENSE_LINEARSLIDER0_WDGT_ID, &cy_capsense_context);
-
+			/* Button0 is active */
 			if (Cy_CapSense_IsWidgetActive(CY_CAPSENSE_BUTTON0_WDGT_ID, &cy_capsense_context)){
-				CurrTouch = TOUCH_BTN0; /* Button0 is active */
+				CurrTouch = TOUCH_BTN0;
+				 /* Return button touch if it changed state from 0 to 1 */
 				if (PrevTouch == TOUCH_NONE) return TOUCH_BTN0;
-
-			}else if(Cy_CapSense_IsWidgetActive (CY_CAPSENSE_BUTTON1_WDGT_ID,&cy_capsense_context)){
-				CurrTouch = TOUCH_BTN1; /* Button1 is active */
+			/* Button1 is active */
+			}else if(Cy_CapSense_IsWidgetActive (CY_CAPSENSE_BUTTON1_WDGT_ID,&cy_capsense_context)){ 
+				CurrTouch = TOUCH_BTN1; 
+				/* Return button touch if it changed state from 0 to 1 */
 				if (PrevTouch == TOUCH_NONE) return TOUCH_BTN1;
-
+			/* Slider left flick detected. */
 			}else if(Slider_Status == LEFT_FLICK_MASK){
-				CurrTouch = LEFT_SLIDE; return LEFT_SLIDE; /* Slider left flick detected. */
-
+				return LEFT_SLIDE; 
+			/* Slider right flick detected. */
 			}else if(Slider_Status == RIGHT_FLICK_MASK){
-				CurrTouch = RIGHT_SLIDE;return RIGHT_SLIDE; /* Slider right flick detected. */
-
+				return RIGHT_SLIDE; 
+			/* No touch detected.*/
 			}else{
-				CurrTouch = TOUCH_NONE; /* No touch detected.*/
+				CurrTouch = TOUCH_NONE; 
 			}
 		}
 	}
 }
 
+/*******************************************************************************
+* void SetupDAC_DMA(uint8 *PatternPtr)
+********************************************************************************
+*
+* Summary:
+*  This function is used to configure DMA descriptors which used for audio playback.
+*  
+* Parameters:
+*  uint8 *PatternPtr - pointer to first element of Pattern array.
+*
+* Return:
+*  None.
+*
+*******************************************************************************/
 void SetupDAC_DMA(uint8 *PatternPtr){
+	/* Set not used in audio playback descriptor as current for channel; disable channel. */
 	Cy_DMA_Channel_SetDescriptor(DAC_DMA_HW, DAC_DMA_CHANNEL, &DAC_DMA_Descriptor_0);
 	Cy_DMA_Disable(DAC_DMA_HW);
-
+	
+	/* Configure each descriptor in descriptors array. Set source address and Y loops 
+		for each descriptor using corresponding Pattern element. 
+		DAC_DMA_SoundDescriptors chained to DAC_DMA_ZeroDescriptors which chained to next 
+		sound descriptor, last descriptor in chain chained to first in order to create loop.
+		DAC_DMA_SoundDescriptors used sound raw data as source, and  DAC_DMA_ZeroDescriptors
+		source is a array with zeros.*/
 	for(int i = 0; i<16; i++){
 		/*Sounds*/
 		Cy_DMA_Descriptor_SetRetrigger(&DAC_DMA_SoundDescriptors[i], CY_DMA_RETRIG_IM);
@@ -151,7 +283,7 @@ void SetupDAC_DMA(uint8 *PatternPtr){
 		Cy_DMA_Descriptor_SetDstTransferSize(&DAC_DMA_SoundDescriptors[i], CY_DMA_TRANSFER_SIZE_WORD);
 		Cy_DMA_Descriptor_SetDescriptorType(&DAC_DMA_SoundDescriptors[i], CY_DMA_2D_TRANSFER);
 		Cy_DMA_Descriptor_SetSrcAddress(&DAC_DMA_SoundDescriptors[i], SoundsPointers[*(PatternPtr + i)]);
-		Cy_DMA_Descriptor_SetDstAddress(&DAC_DMA_SoundDescriptors[i], CTDAC_NEXT_VALUE_PTR);
+		Cy_DMA_Descriptor_SetDstAddress(&DAC_DMA_SoundDescriptors[i], &CTDAC0->CTDAC_VAL_NXT);
 
 		Cy_DMA_Descriptor_SetXloopSrcIncrement(&DAC_DMA_SoundDescriptors[i], 1UL);
 		Cy_DMA_Descriptor_SetXloopDstIncrement(&DAC_DMA_SoundDescriptors[i], 0UL);
@@ -172,7 +304,7 @@ void SetupDAC_DMA(uint8 *PatternPtr){
 		Cy_DMA_Descriptor_SetDstTransferSize(&DAC_DMA_ZeroDescriptors[i], CY_DMA_TRANSFER_SIZE_WORD);
 		Cy_DMA_Descriptor_SetDescriptorType(&DAC_DMA_ZeroDescriptors[i], CY_DMA_2D_TRANSFER);
 		Cy_DMA_Descriptor_SetSrcAddress(&DAC_DMA_ZeroDescriptors[i], SoundsPointers[0]);
-		Cy_DMA_Descriptor_SetDstAddress(&DAC_DMA_ZeroDescriptors[i], CTDAC_NEXT_VALUE_PTR);
+		Cy_DMA_Descriptor_SetDstAddress(&DAC_DMA_ZeroDescriptors[i], &CTDAC0->CTDAC_VAL_NXT);
 
 		Cy_DMA_Descriptor_SetXloopSrcIncrement(&DAC_DMA_ZeroDescriptors[i], 1UL);
 		Cy_DMA_Descriptor_SetXloopDstIncrement(&DAC_DMA_ZeroDescriptors[i], 0UL);
@@ -183,12 +315,20 @@ void SetupDAC_DMA(uint8 *PatternPtr){
 		(i < 15)?(Cy_DMA_Descriptor_SetNextDescriptor(&DAC_DMA_ZeroDescriptors[i], &DAC_DMA_SoundDescriptors[i+1]))
 				 :(Cy_DMA_Descriptor_SetNextDescriptor(&DAC_DMA_ZeroDescriptors[i], &DAC_DMA_SoundDescriptors[0]));
 
+		/* Set first in chain descriptor as active for channel; enable channel. */
 		Cy_DMA_Channel_SetDescriptor(DAC_DMA_HW, DAC_DMA_CHANNEL, &DAC_DMA_SoundDescriptors[0]);
 		Cy_DMA_Enable(DAC_DMA_HW);
 	}
 }
 
-
+/*******************************************************************************
+* void CapSense_Interrupt(void)
+********************************************************************************
+*
+* Summary:
+*  CapSense interrupt function.
+*
+*******************************************************************************/
 void CapSense_Interrupt(void)
 {
     Cy_CapSense_InterruptHandler(CapSense_HW, &cy_capsense_context);

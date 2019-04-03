@@ -5,11 +5,6 @@
 *
 * Description: This file is the public interface of gui_functions.c
 *
-* Related Document:
-*
-* Hardware Dependency: CY8CKIT-062-BLE PSoC 6 BLE Pioneer Kit
-*                      CY8CKIT-028-EPD E-INK Display Shield
-*
 *******************************************************************************/
 #include "hw_functions.h"
 #include "./cy_cy8ckit_028_epd/cy_cy8ckit_028_epd.h"
