@@ -1,3 +1,4 @@
+DEVICE=CY8C6347BZI-BLD53
 ################################################################################
 # \file modus.mk
 # \version 1.0
@@ -25,6 +26,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ################################################################################
+
+
+OSNS=
+CY_MAINAPP_SWCOMP_EXT= \
+
+FEATURE_VALUES=
+
 
 #
 # Toolchain, its optimization level and the configuration (Debug/Release) type
@@ -56,7 +64,7 @@ CY_EXAMPLE_NAME = SequencerX
 #
 # Description of the example project to display
 #
-CY_EXAMPLE_DESCRIPTION = 
+CY_EXAMPLE_DESCRIPTION = Step Sequencer project.
 
 #
 # New project dialog inclusion
@@ -66,7 +74,7 @@ CY_SHOW_NEW_PROJECT = true
 #
 # Valid platforms for this example
 #
-CY_VALID_PLATFORMS = PSOC6_DUAL_CORE PSOC6_SINGLE_CORE
+CY_VALID_PLATFORMS = PSOC6_DUAL_CORE
 
 #
 # This is the required SDK for this example
@@ -81,12 +89,20 @@ CY_VALID_DEVICES = CY8C6347BZI-BLD53
 #
 # The source code for the CM0+ application
 #
-CY_APP_CM0P_SOURCE = \
+CY_APP_CM0P_SOURCE = 
 
 #
 # The source code for the CM4 application
 #
 CY_APP_CM4_SOURCE = \
+	Source/main.c \
+	Source/hw_functions.c \
+	Source/hw_functions.h \
+	Source/gui_functions.c \
+	Source/gui_functions.h \
+	Source/sound_samples.h \
+	Source/stdio_user.c \
+	Source/stdio_user.h \
 	Source/cy_cy8ckit_028_epd/cy_cy8ckit_028_epd.c \
 	Source/cy_cy8ckit_028_epd/cy_cy8ckit_028_epd.h \
 	Source/cy_cy8ckit_028_epd/cy_eink_psoc_interface.c \
@@ -98,14 +114,7 @@ CY_APP_CM4_SOURCE = \
 	Source/emWin_config/GUIConf.c \
 	Source/emWin_config/LCDConf.c \
 	Source/emWin_config/LCDConf.h \
-	Source/main.c\
-	Source/hw_functions.c\
-	Source/hw_functions.h\
-	Source/gui_functions.c\
-	Source/gui_functions.h\
-	Source/sound_samples.h\
-	Source/stdio_user.c\
-	Source/stdio_user.h
+	readme.txt
 
 #
 # Paths to use for ModusToolbox IDE 
@@ -117,7 +126,7 @@ CY_LOCAL_INCLUDE_CM4 = $(CY_GENERATED_DIR)/$(CYMAINAPP_CM4_NAME)
 # Includes specific to the CM0+ application
 #
 APP_MAINAPP_CM0P_INCLUDES = \
-	-IGeneratedSource\
+	-IGeneratedSource
 
 #
 # Includes specific to the CM4 application
@@ -157,16 +166,15 @@ CY_MAINAPP_CM0P_SWCOMP_USED = \
 # Software components needed by CM4
 #
 CY_MAINAPP_SWCOMP_USED= \
-    psoc6sw-1.1/components/psoc6mw/emWin/code/config/nos \
-    psoc6sw-1.1/components/psoc6mw/emWin/code/drivers/BitPlains/config \
-    psoc6sw-1.1/components/psoc6mw/emWin/code/include/nosnts_softfp \
-    psoc6sw-1.1/components/psoc6mw/emWin/code/drivers/BitPlains \
-    psoc6sw-1.1/components/psoc6mw/capsense/softfp \
-    psoc6sw-1.1/components/psoc6pdl/utilities/retarget_io \
-    psoc6sw-1.1/components/psoc6pdl/devices/psoc6/cm0p/prebuilt
+    $(CY_PSOC_LIB_COMP_MIDDLEWARE_BASE)/emWin/code/drivers/BitPlains \
+    $(CY_PSOC_LIB_COMP_MIDDLEWARE_BASE)/emWin/code/include/nosnts_softfp \
+    $(CY_PSOC_LIB_COMP_MIDDLEWARE_BASE)/capsense/softfp \
+    $(CY_PSOC_LIB_COMP_BASE)/utilities/retarget_io \
 
 CY_MAINAPP_SWCOMP_EXT= \
-    psoc6sw-1.1/components/psoc6pdl/utilities/retarget_io/user
+    $(CY_PSOC_LIB_COMP_MIDDLEWARE_BASE)/emWin/code/config/nos \
+    $(CY_PSOC_LIB_COMP_MIDDLEWARE_BASE)/emWin/code/drivers/BitPlains/config \
+    $(CY_PSOC_LIB_COMP_BASE)/psoc6pdl/utilities/retarget_io/user \
 
 #
 # Other libraries (.a) needed by the CM0+ application
@@ -187,7 +195,8 @@ CYCONFIG_DESIGN_MODUS = design.modus
 # Additional (non-core) set of generated source files
 #
 CYCONFIG_GENERATED_SOURCES = \
-
+  GeneratedSource/cycfg_capsense.c \
+  GeneratedSource/cycfg_capsense.h 
 #
 # Check that the CYSDK environment variable exists
 #
