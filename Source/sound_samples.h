@@ -1,10 +1,26 @@
+/******************************************************************************
+* File Name: sound_samples.h
+*
+* Version: 1.00
+*
+* Description: This file contains data to provide sound output.
+*
+*
+* raw sound data arrays, 
+*						array of raw sound pointers (indexes )  that provide graphical
+* 			   user interface.
+*
+*
+*******************************************************************************/
 #define HH_NUM_ELEMENTS (2307)
 #define SD_NUM_ELEMENTS (4355)
 #define CLAP_NUM_ELEMENTS (6660)
 #define KICK_NUM_ELEMENTS (26872)
 
+/*******************************************************************************
+* Sound samples as raw audio arrays created from 12-bit, 44100Hz .wav files.
+*******************************************************************************/
 const int16 silence_sample [256]= {0};
-
 const int16 hh_sample[HH_NUM_ELEMENTS] = {
   0,   3, -39, -110,  67,  57, 237, -165, /* 0-7 */
 -463, 238, 281, 296, -133, -721,  62, 427, /* 8-15 */
@@ -31604,6 +31620,9 @@ const int16 clap_kick[KICK_NUM_ELEMENTS] = {
  80,  78,  75,  73,  71,  68,  65,  63, /* 26856-26863 */
  60,  58,  55,  53,  50,  48,  45,  43}; /* 26864-26871 */
 
+/*******************************************************************************
+* Array of sound samples pointers. Index corresponds to pattern bit.
+*******************************************************************************/
 const int16 *SoundsPointers[16] = {
 	/*
 	 *               [Clap]   V
@@ -31628,6 +31647,9 @@ const int16 *SoundsPointers[16] = {
 	&sd_hh_kick_clap[0]	/* 1111 */
 };
 
+/*******************************************************************************
+* Arrays of DMA Y loops for each sample.
+*******************************************************************************/
 uint32 Y_SoundLoops[16] =
 {
 	  1,  26, 104, 104,
