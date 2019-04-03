@@ -98,14 +98,15 @@ CY_APP_CM4_SOURCE = \
 	Source/emWin_config/GUIConf.c \
 	Source/emWin_config/LCDConf.c \
 	Source/emWin_config/LCDConf.h \
-	Source/main.c\
-	Source/hw_functions.c\
-	Source/hw_functions.h\
-	Source/gui_functions.c\
-	Source/gui_functions.h\
-	Source/sound_samples.h\
-	Source/stdio_user.c\
-	Source/stdio_user.h
+	Source/main.c \
+	Source/hw_functions.c \
+	Source/hw_functions.h \
+	Source/gui_functions.c \
+	Source/gui_functions.h \
+	Source/sound_samples.h \
+	Source/stdio_user.c \
+	Source/stdio_user.h \
+	readme.txt
 
 #
 # Paths to use for ModusToolbox IDE 
