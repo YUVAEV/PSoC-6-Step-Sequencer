@@ -22,6 +22,7 @@
 
 int main(void)
 {
+	
 	uint8 Pattern[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 	//uint8 Pattern[16] = {0};
 	uint8 Tempo = DEFAULT_TEMPO;
@@ -48,10 +49,16 @@ int main(void)
 	for(;;)
 	{
 		switch (MenuRoll()){
+			/*******************************************************************************
+			* Pattern Creator menu selected.
+			*******************************************************************************/		
 			case PatternCreatorMenu:
 				printf("PatternCreatorMenu. \r\n");
 				PatternCreator(&Pattern[0]);
 				break;
+			/*******************************************************************************
+			* Tempo menu seelcted.
+			*******************************************************************************/		
 			case TempoMenu:
 				printf("TempoMenu. \r\n");
 				GUI_InvertRect(195, 45u, 256u, 85u);
@@ -72,6 +79,9 @@ int main(void)
 				GUI_InvertRect(195, 45u, 256u, 85u);
 				UpdateDisplay(CY_EINK_PARTIAL, true);
 				break;
+			/*******************************************************************************
+			* Play menu selected.
+			*******************************************************************************/	
 			case PlayStopMenu:
 				printf("PlayStopMenu. \r\n");
 				GUI_InvertRect(189u, 93u, 262u, 138u);
@@ -86,6 +96,9 @@ int main(void)
 				UpdateDisplay(CY_EINK_PARTIAL, true);
 				LED_PrintByte(LED_NONE);
 				break;
+			/*******************************************************************************
+			* Info menu selected.
+			*******************************************************************************/	
 			case InfoMenu:
 				printf("InfoMenu. \r\n");
 				ShowInfoPages();
